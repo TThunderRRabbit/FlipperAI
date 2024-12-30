@@ -6,11 +6,13 @@ function App() {
   const [input, setInput] = useState("");
 
   const [user, setUser] = useState({
-    name: "Carl Landicho",
-    myBooks: [],
+    name: "Flipper",
     wishlist: [],
     completed: [],
   });
+
+  const [showWishlist, setShowWishlist] = useState(false);
+  const [showCompleted, setShowCompleted] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,12 +29,27 @@ function App() {
           title: book.title,
           image: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`,
           ratings_average: book.ratings_average,
+          completed: false,
         };
       });
       setBookCollection(newBooks);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleChecked = (index) => {
+    const updatedBooks = bookCollection.map((book, i) =>
+      i === index ? { ...book, completed: !book.completed } : book
+    );
+
+    setBookCollection(updatedBooks);
+
+    const completedBooks = updatedBooks.filter((book) => book.completed);
+    setUser((prev) => ({
+      ...prev,
+      completed: completedBooks,
+    }));
   };
 
   const handleChange = (e) => {
@@ -46,21 +63,24 @@ function App() {
     }));
   };
 
-  const [showWishlist, setShowWishlist] = useState(false);
   return (
     <>
       <div className="App">
         <div className="sideBar">
-          <div className="userAccount">Carl Landicho</div>
+          <div className="userAccount">Flipper</div>
           <div className="userNavigation">
-            <div className="myBooks">My Books</div>
             <div
               className="wishList"
               onClick={() => setShowWishlist(!showWishlist)}
             >
               Wishlist
             </div>
-            <div className="completed">Completed</div>
+            <div
+              className="completed"
+              onClick={() => setShowCompleted(!showCompleted)}
+            >
+              Completed
+            </div>
           </div>
         </div>
         <form onSubmit={handleSubmit}>
@@ -68,13 +88,13 @@ function App() {
           <button>search</button>
         </form>
         <div className="bookList">
-          {bookCollection.length > 0 && showWishlist == false && (
+          {bookCollection.length > 0 && !showWishlist && !showCompleted && (
             <ul>
               {bookCollection.map((book, index) => {
                 return (
                   <li key={index}>
                     <h3>{book.title}</h3>
-                    <img src={book.image} />
+                    <img src={book.image} alt={book.title} />
                     <button
                       className="addToWishlist"
                       onClick={() => {
@@ -86,6 +106,11 @@ function App() {
                     <p>
                       Ratings: {book.ratings_average || "Ratings not available"}
                     </p>
+                    <input
+                      type="checkbox"
+                      checked={book.completed}
+                      onChange={() => handleChecked(index)}
+                    />
                   </li>
                 );
               })}
@@ -99,7 +124,22 @@ function App() {
                 return (
                   <li key={index}>
                     <h3>{book.title}</h3>
-                    <img src={book.image} />
+                    <img src={book.image} alt={book.title} />
+                    <p>{book.ratings_average}</p>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
+        <div className="userCompleted">
+          {showCompleted && (
+            <ul>
+              {user.completed.map((book, index) => {
+                return (
+                  <li key={index}>
+                    <h3>{book.title}</h3>
+                    <img src={book.image} alt={book.title} />
                     <p>{book.ratings_average}</p>
                   </li>
                 );
