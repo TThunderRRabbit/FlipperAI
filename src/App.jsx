@@ -10,13 +10,14 @@ function App() {
     wishlist: [],
     completed: [],
   });
+  const [selectedBook, setSelectedBook] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setView("books");
     try {
       const response = await fetch(
-        `https://openlibrary.org/search.json?title=${input}&limit=4`
+        `https://openlibrary.org/search.json?title=${input}&limit=1`
       );
       const data = await response.json();
       console.log(data.docs);
@@ -65,6 +66,11 @@ function App() {
     setView(view === "wishlist" ? "books" : "wishlist");
   const handleCompletedView = () =>
     setView(view === "completed" ? "books" : "completed");
+  const handleBookDataView = (book) => {
+    setSelectedBook(book);
+    console.log(selectedBook);
+    setView(view === "bookData" ? "books" : "bookData");
+  };
 
   return (
     <div className="App">
@@ -98,7 +104,11 @@ function App() {
           <section className="book-list">
             <ul>
               {bookCollection.map((book, index) => (
-                <li key={index} className="book-item">
+                <li
+                  key={index}
+                  className="book-item"
+                  onClick={() => handleBookDataView(book)}
+                >
                   <img
                     src={book.image}
                     alt={book.title}
@@ -171,6 +181,10 @@ function App() {
               ))}
             </ul>
           </section>
+        )}
+
+        {view === "bookData" && (
+          <div className="bookDiv">{selectedBook.title}</div>
         )}
       </main>
     </div>

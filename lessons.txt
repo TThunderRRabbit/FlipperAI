@@ -1,0 +1,4 @@
+if you are in a folder already, to start react, npm create vite@latest .
+
+then npm install
+then npm run dev
