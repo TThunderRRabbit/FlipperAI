@@ -19,14 +19,17 @@ function App() {
         `https://openlibrary.org/search.json?title=${input}&limit=4`
       );
       const data = await response.json();
+      console.log(data.docs);
       const newBooks = data.docs.map((book) => {
         return {
           title: book.title,
           image: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`,
           ratings_average: book.ratings_average,
           completed: false,
+          author_name: book.author_name || [],
         };
       });
+
       setBookCollection(newBooks);
     } catch (error) {
       console.error(error);
@@ -77,7 +80,7 @@ function App() {
         </nav>
       </aside>
 
-      <main className="content">
+      <main className="mainContent">
         <form className="search-form" onSubmit={handleSubmit}>
           <input
             type="text"
@@ -96,21 +99,26 @@ function App() {
             <ul>
               {bookCollection.map((book, index) => (
                 <li key={index} className="book-item">
-                  <h3 className="book-title">{book.title}</h3>
                   <img
                     src={book.image}
                     alt={book.title}
                     className="book-image"
                   />
+                  <h3 className="book-title">{book.title}</h3>
+                  <h4 className="book-author">
+                    {"Author: " +
+                      (book.author_name?.map((author) => author).join(", ") ||
+                        "not available")}
+                  </h4>
+                  <p className="book-ratings">
+                    Ratings: {Number(book.ratings_average.toFixed(2)) || "N/A"}
+                  </p>
                   <button
                     className="wishlist-add"
                     onClick={() => addToWishList(book)}
                   >
                     Add to Wishlist
                   </button>
-                  <p className="book-ratings">
-                    Ratings: {book.ratings_average || "N/A"}
-                  </p>
                   <label className="book-completed">
                     <input
                       type="checkbox"
@@ -130,14 +138,14 @@ function App() {
             <ul>
               {user.wishlist.map((book, index) => (
                 <li key={index} className="wishlist-item">
-                  <h3 className="wishlist-title">{book.title}</h3>
                   <img
                     src={book.image}
                     alt={book.title}
                     className="wishlist-image"
                   />
+                  <h3 className="wishlist-title">{book.title}</h3>
                   <p className="wishlist-ratings">
-                    {book.ratings_average || "N/A"}
+                    Ratings: {Number(book.ratings_average.toFixed(2)) || "N/A"}
                   </p>
                 </li>
               ))}
@@ -150,14 +158,14 @@ function App() {
             <ul>
               {user.completed.map((book, index) => (
                 <li key={index} className="completed-item">
-                  <h3 className="completed-title">{book.title}</h3>
                   <img
                     src={book.image}
                     alt={book.title}
                     className="completed-image"
                   />
+                  <h3 className="completed-title">{book.title}</h3>
                   <p className="completed-ratings">
-                    {book.ratings_average || "N/A"}
+                    Ratings: {Number(book.ratings_average.toFixed(2)) || "N/A"}
                   </p>
                 </li>
               ))}
