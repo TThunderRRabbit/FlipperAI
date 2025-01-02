@@ -22,12 +22,21 @@ function App() {
       const data = await response.json();
       console.log(data.docs);
       const newBooks = data.docs.map((book) => {
+        const sortedSubjects =
+          book.subject?.slice().sort((a, b) => {
+            const aCount = book.work_count?.[a] || 0;
+            const bCount = book.work_count?.[b] || 0;
+            return bCount - aCount;
+          }) || [];
+
         return {
           title: book.title,
           image: `https://covers.openlibrary.org/b/id/${book.cover_i}-L.jpg`,
           ratings_average: book.ratings_average,
           completed: false,
           author_name: book.author_name || [],
+          subject: book.subject,
+          popularSubject: sortedSubjects.slice(0, 5),
         };
       });
 
@@ -68,8 +77,8 @@ function App() {
     setView(view === "completed" ? "books" : "completed");
   const handleBookDataView = (book) => {
     setSelectedBook(book);
-    console.log(selectedBook);
     setView(view === "bookData" ? "books" : "bookData");
+    console.log(book.popularSubject);
   };
 
   return (
