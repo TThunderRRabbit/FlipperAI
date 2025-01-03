@@ -37,6 +37,7 @@ function App() {
           author_name: book.author_name || [],
           subject: book.subject,
           popularSubject: sortedSubjects.slice(0, 5),
+          key: book.key,
         };
       });
 
@@ -75,10 +76,24 @@ function App() {
     setView(view === "wishlist" ? "books" : "wishlist");
   const handleCompletedView = () =>
     setView(view === "completed" ? "books" : "completed");
-  const handleBookDataView = (book) => {
+  const handleBookDataView = async (book) => {
     setSelectedBook(book);
     setView(view === "bookData" ? "books" : "bookData");
-    console.log(book.popularSubject);
+
+    try {
+      const bookDetailsResponse = await fetch(
+        `https://openlibrary.org${book.key}.json`
+      );
+      const bookDetails = await bookDetailsResponse.json();
+
+      const description = bookDetails.description
+        ? bookDetails.description.value || bookDetails.description
+        : "No description available.";
+
+      console.log(description);
+    } catch (error) {
+      console.error("Error fetching book details:", error);
+    }
   };
 
   return (
