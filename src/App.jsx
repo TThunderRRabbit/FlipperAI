@@ -17,7 +17,7 @@ function App() {
     setView("books");
     try {
       const response = await fetch(
-        `https://openlibrary.org/search.json?title=${input}&limit=1`
+        `https://openlibrary.org/search.json?title=${input}&limit=`
       );
       const data = await response.json();
       console.log(data.docs);
@@ -113,15 +113,12 @@ function App() {
           <section className="book-list">
             <ul>
               {bookCollection.map((book, index) => (
-                <li
-                  key={index}
-                  className="book-item"
-                  onClick={() => handleBookDataView(book)}
-                >
+                <li key={index} className="book-item">
                   <img
                     src={book.image}
                     alt={book.title}
                     className="book-image"
+                    onClick={() => handleBookDataView(book)}
                   />
                   <h3 className="book-title">{book.title}</h3>
                   <h4 className="book-author">
@@ -130,7 +127,10 @@ function App() {
                         "not available")}
                   </h4>
                   <p className="book-ratings">
-                    Ratings: {Number(book.ratings_average.toFixed(2)) || "N/A"}
+                    Ratings:{" "}
+                    {book.ratings_average
+                      ? Number(book.ratings_average.toFixed(2))
+                      : "N/A"}
                   </p>
                   <button
                     className="wishlist-add"
@@ -164,7 +164,10 @@ function App() {
                   />
                   <h3 className="wishlist-title">{book.title}</h3>
                   <p className="wishlist-ratings">
-                    Ratings: {Number(book.ratings_average.toFixed(2)) || "N/A"}
+                    Ratings:{" "}
+                    {book.ratings_average
+                      ? Number(book.ratings_average.toFixed(2))
+                      : "N/A"}
                   </p>
                 </li>
               ))}
@@ -184,7 +187,10 @@ function App() {
                   />
                   <h3 className="completed-title">{book.title}</h3>
                   <p className="completed-ratings">
-                    Ratings: {Number(book.ratings_average.toFixed(2)) || "N/A"}
+                    Ratings:{" "}
+                    {book.ratings_average
+                      ? Number(book.ratings_average.toFixed(2))
+                      : "N/A"}
                   </p>
                 </li>
               ))}
@@ -193,7 +199,21 @@ function App() {
         )}
 
         {view === "bookData" && (
-          <div className="bookDiv">{selectedBook.title}</div>
+          <>
+            <div className="bookDiv">{selectedBook.title}</div>
+            <img src={selectedBook.image} />
+            <div className="bookAuthor">{selectedBook.author_name}</div>
+            <div className="bookRatings">
+              {selectedBook.ratings_average.toFixed(2)}
+            </div>
+            <div className="bookGenres">
+              <span>{selectedBook.popularSubject[0]}</span>
+              <span>{selectedBook.popularSubject[1]}</span>
+              <span>{selectedBook.popularSubject[2]}</span>
+              <span>{selectedBook.popularSubject[3]}</span>
+              <span>{selectedBook.popularSubject[4]}</span>
+            </div>
+          </>
         )}
       </main>
     </div>
